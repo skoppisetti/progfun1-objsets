@@ -76,7 +76,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def descendingByRetweet: TweetList = ???
+    def descendingByRetweet: TweetList
   
   /**
    * The following methods are already implemented
@@ -112,7 +112,7 @@ class Empty extends TweetSet {
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
   def union(that: TweetSet): TweetSet = that
   def mostRetweeted: Tweet = throw new java.util.NoSuchElementException()
-
+  def descendingByRetweet: TweetList = Nil
   /**
    * The following methods are already implemented
    */
@@ -152,26 +152,26 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
         if(elem.retweets > right.mostRetweeted.retweets) elem else right.mostRetweeted
   }
 
-  /*
-  def mostRetweeted: Tweet = {
-    if(left.isInstanceOf[Empty] && )
-    def scanSet(ts: TweetSet): (Tweet, Int) = ts match {
-      case e: Empty => (null, 0)
-      case ne: NonEmpty => {
-        val mostOnLeft = scanSet(ne.left) //(left.mostRetweeted, left.mostRetweeted.retweets)
-        val mostOnRight = scanSet(ne.right) //(right.mostRetweeted, right.mostRetweeted.retweets)
-        if(mostOnLeft._2 > mostOnLeft._2)
-          if(mostOnLeft._2 > ne.elem.retweets) mostOnLeft
-          else (ne.elem, ne.elem.retweets)
-        else if(mostOnRight._2 > ne.elem.retweets) mostOnRight
-        else (ne.elem, ne.elem.retweets)
+  def descendingByRetweet: TweetList = {
+    def scanSet(ts: TweetSet, tl: TweetList): TweetList = {
+      if(ts.isInstanceOf[Empty]) reverse(tl, Nil)
+      else {
+        val t = ts.mostRetweeted
+        //def list: TweetList = if(tl.isEmpty) new Cons(t, tl) else new Cons(tl.head, new Cons(t, tl.tail))
+        val list = new Cons(t, tl)
+        scanSet(ts.remove(t), list)
       }
     }
-    scanSet(this)._1
+
+    def reverse(tl: TweetList, rl: TweetList): TweetList = {
+      if(tl.isEmpty) rl
+      else
+        if(rl.isEmpty) reverse(tl.tail, new Cons(tl.head, Nil))
+        else reverse(tl.tail, new Cons(tl.head, rl))
+    }
+
+    scanSet(this, Nil)
   }
-
-   */
-
   /**
    * The following methods are already implemented
    */
