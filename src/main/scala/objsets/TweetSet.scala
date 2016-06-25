@@ -139,18 +139,38 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def union(that: TweetSet): TweetSet = ((left union right) union that) incl elem
 
   def mostRetweeted: Tweet = {
-    try {
-      left.mostRetweeted
-    }
-    catch(java.util.NoSuchElementException e) {
-      try {
-        right.mostRetweeted
-      }
-      catch(java.util.NoSuchElementException e) {
-        elem
-      }
-    }
+    if(left.isInstanceOf[Empty] && right.isInstanceOf[Empty]) elem
+    else if(left.isInstanceOf[NonEmpty] && right.isInstanceOf[Empty])
+      if(left.mostRetweeted.retweets > elem.retweets) left.mostRetweeted else elem
+    else if(left.isInstanceOf[Empty] && right.isInstanceOf[NonEmpty])
+      if(right.mostRetweeted.retweets > elem.retweets) right.mostRetweeted else elem
+    else
+      if(left.mostRetweeted.retweets > elem.retweets)
+        if(left.mostRetweeted.retweets > right.mostRetweeted.retweets) left.mostRetweeted
+        else right.mostRetweeted
+      else
+        if(elem.retweets > right.mostRetweeted.retweets) elem else right.mostRetweeted
   }
+
+  /*
+  def mostRetweeted: Tweet = {
+    if(left.isInstanceOf[Empty] && )
+    def scanSet(ts: TweetSet): (Tweet, Int) = ts match {
+      case e: Empty => (null, 0)
+      case ne: NonEmpty => {
+        val mostOnLeft = scanSet(ne.left) //(left.mostRetweeted, left.mostRetweeted.retweets)
+        val mostOnRight = scanSet(ne.right) //(right.mostRetweeted, right.mostRetweeted.retweets)
+        if(mostOnLeft._2 > mostOnLeft._2)
+          if(mostOnLeft._2 > ne.elem.retweets) mostOnLeft
+          else (ne.elem, ne.elem.retweets)
+        else if(mostOnRight._2 > ne.elem.retweets) mostOnRight
+        else (ne.elem, ne.elem.retweets)
+      }
+    }
+    scanSet(this)._1
+  }
+
+   */
 
   /**
    * The following methods are already implemented
