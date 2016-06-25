@@ -172,6 +172,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
     scanSet(this, Nil)
   }
+
   /**
    * The following methods are already implemented
    */
@@ -225,15 +226,23 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-    lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  //val allTweets = TweetReader.allTweets
+
+  def scanForKeyWords(keywords: List[String]): TweetSet = {
+    val matchedTweets = new Empty
+    TweetReader.allTweets.foreach(t => if(keywords.exists(t.text.contains)) matchedTweets.incl(t) else ())
+    matchedTweets
+  }
+
+  lazy val googleTweets: TweetSet = scanForKeyWords(google)
+  lazy val appleTweets: TweetSet = scanForKeyWords(apple)
   
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-     lazy val trending: TweetList = ???
-  }
+   lazy val trending: TweetList = (googleTweets union appleTweets).descendingByRetweet
+}
 
 object Main extends App {
   // Print the trending tweets
