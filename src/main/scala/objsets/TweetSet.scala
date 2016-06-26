@@ -136,7 +136,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     if(p(elem)) acc.incl(elem) else acc
   }
 
-  def union(that: TweetSet): TweetSet = ((left union right) union that) incl elem
+  def union(that: TweetSet): TweetSet = right.union(left.union(that.incl(elem)))//(left union (right union that)) incl elem
 
   def mostRetweeted: Tweet = {
     if(left.isInstanceOf[Empty] && right.isInstanceOf[Empty]) elem
@@ -226,10 +226,8 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  //val allTweets = TweetReader.allTweets
-
   def scanForKeyWords(keywords: List[String]): TweetSet = {
-    val matchedTweets = new Empty
+    var matchedTweets = new Empty
     TweetReader.allTweets.foreach(t => if(keywords.exists(t.text.contains)) matchedTweets.incl(t) else ())
     matchedTweets
   }
